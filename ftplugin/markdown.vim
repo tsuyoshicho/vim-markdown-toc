@@ -85,6 +85,7 @@ function! s:GetCodeSections()
     let l:codeSections = {}
 
     call extend(l:codeSections, <SID>GetSections("^```", "^```"))
+    call extend(l:codeSections, <SID>GetSections("^>", "^\\n"))
     call extend(l:codeSections, <SID>GetSections("^{% highlight", "^{% endhighlight"))
 
     return l:codeSections
@@ -155,7 +156,7 @@ function! s:GetHeadingLinkGFM(headingName)
     " chinese chars are removed.
     " \\%#=0: allow this pattern to use the regexp engine he wants. Having
     " `set re=1` in the vimrc could break this behavior. cf. issue #19
-    let l:headingLink = substitute(l:headingLink, "\\%#=0[^[:alnum:]々〇〻\u2E80-\u2FDF\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]|[\uD840-\uD87F][\uDC00-\uDFFF _-]\\|(\\|)\\|{\\|}\\|/\\|\\$", "", "g")
+    let l:headingLink = substitute(l:headingLink, "\\%#=0[^[:alnum:]々〇〻\u2E80-\u2FDF\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]|[\uD840-\uD87F][\uDC00-\uDFFF _-]", "", "g")
     let l:headingLink = substitute(l:headingLink, " ", "-", "g")
 
     if l:headingLink ==# ""
@@ -269,7 +270,7 @@ function! s:GenTocInner(markdownStyle, isModeline)
     let l:listItemChars = [g:vmt_list_item_char]
 
     let g:GFMHeadingIds = {}
-    
+
     for headingLine in l:headingLines
         call add(l:levels, <SID>GetHeadingLevel(headingLine))
     endfor
@@ -405,7 +406,7 @@ function! s:DeleteExistingToc()
     keepjumps normal! gg0
 
     let l:markdownStyle = <SID>GetMarkdownStyleInModeline()
-    
+
     let l:isModeline = 0
 
     if index(s:supportMarkdownStyles, l:markdownStyle) != -1
